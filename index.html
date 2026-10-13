@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cat Status Tracker</title>
+    <!-- Firebase SDK (Compat Version for easy single-file setup) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #8e8e93;
+            --accent: #34c759;
+            --accent-outside: #ff3b30;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-primary);
+        }
+        h2 {
+            margin-bottom: 24px;
+            font-weight: 600;
+            font-size: 24px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .cat-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .status-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        /* iOS Style Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 32px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e5ea;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 32px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 28px;
+            width: 28px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🐱 Cat Tracker</h2>
+
+    <div class="card">
+        <div class="cat-info">
+            <span class="cat-name">Cat 1</span>
+            <span id="cat1-label" class="status-text">Loading...</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="cat1-toggle" onchange="updateCatStatus('cat1', this.checked)">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="card">
+        <div class="cat-info">
+            <span class="cat-name">Cat 2</span>
+            <span id="cat2-label" class="status-text">Loading...</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="cat2-toggle" onchange="updateCatStatus('cat2', this.checked)">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <script>
+        // TODO: Replace this with your own free Firebase project configuration credentials
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTQ49Ok4FRdHrI5GBlPw34RotzAP1DALE",
+            authDomain: "cat-status.firebaseapp.com",
+            databaseURL: "https://cat-status-default-rtdb.firebaseio.com",
+            projectId: "cat-status",
+            storageBucket: "cat-status.firebasestorage.app",
+            messagingSenderId: "641362120086",
+            appId: "1:641362120086:web:cd745ce9cc87d3d88361b7"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Listen for real-time updates from Firebase
+        db.ref('cats').on('value', (snapshot) => {
+            const data = snapshot.val() || { cat1: false, cat2: false };
+            
+            // Update Cat 1 UI
+            document.getElementById('cat1-toggle').checked = data.cat1;
+            document.getElementById('cat1-labelinnerText' || 'cat1-label').innerText = data.cat1 ? 'Inside 🏠' : 'Outside 🌳';
+            
+            // Update Cat 2 UI
+            document.getElementById('cat2-toggle').checked = data.cat2;
+            document.getElementById('cat2-label').innerText = data.cat2 ? 'Inside 🏠' : 'Outside 🌳';
+        });
+
+        // Function called when a user toggles the switch
+        function updateCatStatus(catId, isInside) {
+            db.ref('cats/' + catId).set(isInside);
+        }
+    </script>
+</body>
+</html>
